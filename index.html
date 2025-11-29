@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lista de Palavras - Níveis</title>
+  <title>Palavras - Níveis</title>
 
-  <!-- manifest relativo (correto para GitHub Pages) -->
+  <!-- Caminho relativo correto para GitHub Pages -->
   <link rel="manifest" href="manifest.json">
 
   <link rel="stylesheet" href="styles.css">
@@ -20,19 +20,15 @@
       <button id="addBtn">ADD</button>
     </section>
 
-    <section id="list" class="list">
-      <!-- itens serão inseridos aqui -->
-    </section>
+    <section id="list" class="list"></section>
   </main>
 
   <script src="app.js" defer></script>
 
 <script>
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-            .catch(err => console.warn('SW registration failed', err));
-    });
+  navigator.serviceWorker.register('./service-worker.js')
+    .catch(err => console.warn('SW registration failed', err));
 }
 </script>
 
