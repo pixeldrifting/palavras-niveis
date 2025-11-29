@@ -1,4 +1,5 @@
 const CACHE_NAME = 'pw-cache-v1';
+
 const urlsToCache = [
   './',
   './index.html',
