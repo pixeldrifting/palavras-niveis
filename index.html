@@ -5,12 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Palavras - Níveis</title>
 
-  <!-- Manifesto PWA -->
   <link rel="manifest" href="./manifest.json">
-
-  <!-- Estilos -->
   <link rel="stylesheet" href="./styles.css">
-
   <meta name="theme-color" content="#2b2b2b" />
 </head>
 <body>
@@ -19,7 +15,6 @@
 
     <h1>Palavras — Níveis</h1>
 
-    <!-- Campo + botão -->
     <section class="input-row">
       <input 
         id="wordInput" 
@@ -31,28 +26,45 @@
       <button id="addBtn">ADD</button>
     </section>
 
-    <!-- Lista com scroll -->
     <div class="scroll-wrap">
       <section id="list" class="list"></section>
     </div>
 
-    <!-- Paginação -->
     <div class="pagination">
       <button id="prevPage" class="pg-btn">&lt;</button>
       <span id="pageInfo">1 / 1</span>
       <button id="nextPage" class="pg-btn">&gt;</button>
     </div>
-
   </main>
 
-  <!-- Lógica -->
   <script src="./app.js" defer></script>
 
-  <!-- Registro do Service Worker -->
+  <!-- ⚡ Service Worker atualizado -->
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js")
-        .catch(err => console.warn("SW registration failed:", err));
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('./service-worker.js', {
+            updateViaCache: 'none'
+          });
+
+          // Se já existir um SW esperando, ativa imediatamente
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING_AND_RELOAD' });
+          }
+
+          // Checa atualização
+          reg.update();
+
+          // Quando o novo SW assumir controle → recarrega automaticamente
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          });
+
+        } catch (err) {
+          console.warn('SW registration failed:', err);
+        }
+      });
     }
   </script>
 
