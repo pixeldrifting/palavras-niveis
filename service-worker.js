@@ -1,30 +1,66 @@
-const CACHE_NAME = 'pw-cache-v1';
+// ===============================
+// SERVICE WORKER — AUTO UPDATE
+// ===============================
 
-const urlsToCache = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+// Mude este número sempre que quiser forçar atualização manual.
+// Mas na maioria das vezes não precisa, pois o hash faz isso sozinho.
+const SW_VERSION = "v1";
+
+// Nome do cache
+const CACHE_NAME = "palavras-cache-" + SW_VERSION;
+
+// Arquivos a serem cacheados
+const FILES_TO_CACHE = [
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./manifest.json",
 ];
 
-self.addEventListener('install', event => {
+// INSTALAÇÃO — faz o download dos arquivos novos
+self.addEventListener("install", (event) => {
+  console.log("[SW] Instalando nova versão", SW_VERSION);
+
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(FILES_TO_CACHE);
+    })
   );
+
+  // Força a ativação imediata
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
+// ATIVAÇÃO — apaga caches antigos automaticamente
+self.addEventListener("activate", (event) => {
+  console.log("[SW] Ativando versão", SW_VERSION);
+
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      );
+    })
+  );
+
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
+// FETCH — lógica inteligente de atualização
+self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)               // tenta pegar a versão nova sempre
+      .then((response) => {
+        // Atualiza o cache com o arquivo novo
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, clone);
+        });
+        return response;
+      })
+      .catch(() => caches.match(event.request)) // se offline, usa o cache
   );
 });
