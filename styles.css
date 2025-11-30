@@ -6,21 +6,26 @@
   --btn:#e0e0e0;
 }
 
-*{box-sizing:border-box}
-html,body{
+*{
+  box-sizing:border-box;
+}
+
+html, body{
   height:100%;
   margin:0;
   font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-body{
   background:var(--bg);
   color:var(--accent);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
 }
 
+/* NÃO CENTRALIZAMOS O BODY PARA NÃO TRAVAR O SCROLL */
+body{
+  padding:24px;
+  display:flex;
+  justify-content:center;
+}
+
+/* CONTAINER PRINCIPAL */
 .container{
   width:360px;
   max-width:95vw;
@@ -32,9 +37,12 @@ body{
 
   display:flex;
   flex-direction:column;
+
+  /* permite que a parte interna tenha scroll sem distorcer a página */
+  max-height:calc(100vh - 48px);
 }
 
-/* ENVOLVE A LISTA — garante scroll correto */
+/* ENVOLVE A LISTA — ÁREA ROLÁVEL */
 .scroll-wrap{
   flex:1;
   overflow-y:auto;
@@ -42,12 +50,14 @@ body{
   margin-top:4px;
 }
 
+/* TÍTULO */
 h1{
   font-size:18px;
   margin:0 0 12px 0;
   text-align:center;
 }
 
+/* INPUT + BOTÃO */
 .input-row{
   display:flex;
   gap:8px;
@@ -77,7 +87,7 @@ h1{
   gap:10px;
 }
 
-/* item */
+/* ITEM */
 .item{
   display:flex;
   align-items:center;
@@ -125,6 +135,7 @@ h1{
   padding:6px 10px;
   font-weight:800;
 }
+
 .small-muted{
   font-size:12px;
   color:var(--muted);
