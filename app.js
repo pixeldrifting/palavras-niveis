@@ -15,15 +15,27 @@ addBtn.onclick = () => {
 
   words.push({ word: w, level: 0 });
   input.value = "";
+  sortWords();
   updateList();
 };
 
-// Renderiza apenas os itens da página
+// 🔥 Função que organiza automaticamente
+function sortWords() {
+  words.sort((a, b) => {
+    // Primeiro ordena pelo nível (maior nível primeiro)
+    if (b.level !== a.level) return b.level - a.level;
+
+    // Depois ordena alfabeticamente se o nível for igual
+    return a.word.localeCompare(b.word, "pt-BR");
+  });
+}
+
 function updateList() {
+  sortWords(); // sempre organiza antes de mostrar
+
   listEl.innerHTML = "";
 
   const totalPages = Math.max(1, Math.ceil(words.length / pageSize));
-
   if (currentPage > totalPages) currentPage = totalPages;
 
   const start = (currentPage - 1) * pageSize;
@@ -47,12 +59,16 @@ function updateList() {
     const realIndex = start + index;
 
     div.querySelector(".minus").onclick = () => {
-      if (words[realIndex].level > 0) words[realIndex].level--;
-      updateList();
+      if (words[realIndex].level > 0) {
+        words[realIndex].level--;
+        sortWords();
+        updateList();
+      }
     };
 
     div.querySelector(".plus").onclick = () => {
       words[realIndex].level++;
+      sortWords();
       updateList();
     };
 
@@ -62,7 +78,6 @@ function updateList() {
   pageInfo.textContent = `${currentPage} / ${totalPages}`;
 }
 
-// Botões de navegação
 prevBtn.onclick = () => {
   if (currentPage > 1) {
     currentPage--;
